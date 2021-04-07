@@ -6,6 +6,7 @@ const ExpressError = require("../expressError");
 
 app.use(express.json());
 
+// ********** GET **********
 router.get('/', async (req, res, next) => {
     try {
         const results = await db.query(`SELECT id, comp_code FROM invoices`);
@@ -49,7 +50,7 @@ router.get('/:id', async (req, res, next) => {
     }
 });
 
-
+// ********** POST **********
 router.post('/', async (req, res, next) => {
     try {
         const { comp_code, amt } = req.body;
@@ -67,7 +68,7 @@ router.post('/', async (req, res, next) => {
     }
 });
 
-
+// ********** PUT **********
 router.put('/:id', async (req, res, next) => {
     try {
         const { amt } = req.params;
@@ -85,7 +86,7 @@ router.put('/:id', async (req, res, next) => {
     }
 });
 
-
+// ********** DELETE **********
 router.delete('/:id', async (req, res, next) => {
     try {
         const result = await db.query(`
