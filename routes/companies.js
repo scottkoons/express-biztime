@@ -4,6 +4,7 @@ const express = require("express");
 const ExpressError = require("../expressError");
 const router = express.Router();
 const db = require("../db");
+const slugify = require('slugify');
 
 // ********** GET **********
 router.get('/', async (req, res, next) => {
@@ -26,8 +27,8 @@ router.get("/:code", async (req, res, next) => {
         let { code, name, description } = companyResult.rows[0];
         return res.json({ code, name, description, invoices: invoicesResults.rows });
     }
-    catch (err) {
-        return next(err);
+    catch (e) {
+        return next(e);
     }
 });
 
@@ -45,6 +46,7 @@ router.get('/search', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
     try {
         const { code, name, description } = req.body;
+        // const code = slugify(name, { lower: true });
         const results = await db.query(`INSERT INTO companies (code, name, description) VALUES ($1, $2, $3)RETURNING code, name, description`, [code, name, description]);
         return res.status(201).json({ user: results.rows[0] });
     } catch (e) {
@@ -52,10 +54,11 @@ router.post('/', async (req, res, next) => {
     }
 });
 
-// ********** PATCH **********
-router.patch('/:code', async (req, res, next) => {
+// ********** PUT **********
+router.put('/:code', async (req, res, next) => {
     try {
-        const { code } = req.params;
+        // const { code } = req.params;
+        const code = slugify(req.params.code, { lower: true });
         const { name, description } = req.body;
         const results = await db.query(`UPDATE companies SET name=$1, description=$2 WHERE code=$3 RETURNING code, name, description`, [name, description, code]);
         if (results.rows.length === 0) {
